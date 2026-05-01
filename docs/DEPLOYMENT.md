@@ -1,49 +1,30 @@
-# 本番リリース手順（Render）
+# 本番デプロイ
 
-## 前提
+## 推奨（長期・無料に近い）
 
-このフォルダ単体を Git リポジトリのルートにするのが最も簡単です。モノレポの場合は [MONOREPO.md](MONOREPO.md) を参照してください。
+Render 付帯の無料 Postgres（30日制限）を避け、**外部の無料 Postgres（例: Neon）+ Render 無料 Web** にします。
 
-## 1) GitHub に公開
+手順の全文: **[FREE_LONGTERM.md](FREE_LONGTERM.md)**
 
-1. 新規リポジトリ作成: [https://github.com/new](https://github.com/new)
-2. このディレクトリのみを push（例）:
+## 補足: モノレポから出す場合
 
-```bash
-cd station-match-safe
-git init
-git add .
-git commit -m "release: station-only match MVP"
-git branch -M main
-git remote add origin <YOUR_REPO_URL>
-git push -u origin main
-```
+[MONOREPO.md](MONOREPO.md)
 
-## 2) Render で Blueprint デプロイ
+## リリース後の確認 URL（`<APP>` は実際の Render URL）
 
-1. Render ダッシュボード: [https://dashboard.render.com/](https://dashboard.render.com/)
-2. **New +** → **Blueprint**
-3. GitHub リポジトリを接続し、ルートの `render.yaml` を選択
-4. Web サービス `station-match-safe` と PostgreSQL `station-match-db` が作成される
-5. Web サービスの **Environment** で `ALLOW_ORIGINS` を設定:
-   - デプロイ完了後に表示される URL（例: `https://station-match-safe.onrender.com`）をそのまま入力
-   - 複数ドメインはカンマ区切り（例: `https://app.example.com,https://www.example.com`）
+- `<APP>/health`
+- `<APP>/policy/safety`
+- `<APP>/stations`
+- `<APP>/venues?station=熊谷`
 
-## 3) リリース確認（URL は実際の値に置き換え）
+## セキュリティ確認
 
-- ヘルス: `https://<YOUR_SERVICE>.onrender.com/health`
-- ポリシー: `https://<YOUR_SERVICE>.onrender.com/policy/safety`
-- 駅一覧: `https://<YOUR_SERVICE>.onrender.com/stations`
-- 候補: `https://<YOUR_SERVICE>.onrender.com/venues?station=熊谷`
+- `ALLOW_ORIGINS` が本番ドメインのみ
+- レスポンスヘッダ（`X-Frame-Options` 等）
+- レート制限（429）
 
-## 4) セキュリティ確認
+## 運用
 
-- CORS が本番ドメインのみになっていること（`ALLOW_ORIGINS`）
-- レスポンスヘッダに `X-Frame-Options`, `X-Content-Type-Options`, `Content-Security-Policy` が付与されていること
-- 過剰アクセスで `429` が返ること（レート制限）
-
-## 5) 運用
-
-- ログ: Render ダッシュボードの **Logs**
+- ログ: Render ダッシュボード **Logs**
 - メトリクス: `GET /metrics`
 - 監査: `GET /safety/audit-logs`

@@ -9,7 +9,7 @@
 3. **Root Directory** に `station-match-safe` を指定
 4. **Runtime** は Docker（このフォルダの `Dockerfile` を使用）
 5. **Environment**:
-   - `DATABASE_URL`: Render PostgreSQL の Internal/External URL
+   - `DATABASE_URL`: **Neon 等の外部 Postgres URI**（推奨。Render 無料 Postgres は30日制限あり）
    - `ALLOW_ORIGINS`: 本番 URL
    - `API_RATE_LIMIT_PER_MIN`: `60`（任意）
 
@@ -26,4 +26,4 @@ services:
     healthCheckPath: /health
 ```
 
-データベースは Render で別途 PostgreSQL を作成し、`DATABASE_URL` を Web サービスに渡します。
+データベースは **Neon 等で作成**し、`DATABASE_URL` を Web サービスに渡します（手順は [FREE_LONGTERM.md](FREE_LONGTERM.md)）。

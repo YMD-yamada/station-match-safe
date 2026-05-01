@@ -30,7 +30,8 @@ uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
 ## 本番デプロイ
 
-[docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
+- **長期で無料に近い構成（推奨）**: [docs/FREE_LONGTERM.md](docs/FREE_LONGTERM.md)（Render Web 無料 + Neon 等）
+- **手順索引**: [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
 
 ## スモークテスト
 

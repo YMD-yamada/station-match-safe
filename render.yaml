@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: station-match-safe
+    runtime: docker
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: station-match-db
+          property: connectionString
+      - key: ALLOW_ORIGINS
+        sync: false
+      - key: API_RATE_LIMIT_PER_MIN
+        value: "60"
+
+databases:
+  - name: station-match-db
+    databaseName: station_match
+    user: station_match_user

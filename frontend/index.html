@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>駅のみマッチ 安全MVP</title>
+    <style>
+      body { margin: 0; font-family: "Segoe UI", sans-serif; background: #f5f7fb; color: #1f2430; }
+      header { background: #1f4bcc; color: #fff; padding: 20px; }
+      main { max-width: 1000px; margin: 16px auto; display: grid; gap: 12px; padding: 0 12px; }
+      .card { background: #fff; border-radius: 10px; padding: 12px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08); }
+      .row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+      input, select, button, textarea { padding: 8px; border: 1px solid #d2d8e5; border-radius: 8px; }
+      input, select, textarea { flex: 1; min-width: 140px; }
+      button { background: #1f4bcc; color: #fff; border: none; cursor: pointer; }
+      .mono { font-family: Consolas, monospace; white-space: pre-wrap; font-size: 13px; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>駅のみマッチ（Web MVP）</h1>
+      <p>高崎線（上尾〜本庄）の駅近候補・承認制マッチ・安全運用</p>
+    </header>
+    <main>
+      <section class="card">
+        <h2>安全ポリシー</h2>
+        <button type="button" onclick="loadPolicy()">読み込み</button>
+        <div id="policy" class="mono"></div>
+      </section>
+
+      <section class="card">
+        <h2>ユーザー登録</h2>
+        <div class="row">
+          <input id="nickname" placeholder="ニックネーム" />
+          <input id="email" placeholder="メール" />
+          <input id="age" type="number" placeholder="年齢(20+)" />
+        </div>
+        <div class="row">
+          <input id="hobbies" placeholder="趣味(カンマ区切り)" />
+          <input id="stations" placeholder="希望駅(カンマ区切り)" />
+          <button type="button" onclick="createUser()">登録</button>
+        </div>
+        <div id="createUserResult" class="mono"></div>
+      </section>
+
+      <section class="card">
+        <h2>駅近候補</h2>
+        <div class="row">
+          <input id="station" placeholder="例: 熊谷" />
+          <button type="button" onclick="loadVenues()">取得</button>
+        </div>
+        <div id="venues" class="mono"></div>
+      </section>
+
+      <section class="card">
+        <h2>承認制マッチ + チャット</h2>
+        <div class="row">
+          <input id="requesterId" type="number" placeholder="申請者ID" />
+          <input id="targetId" type="number" placeholder="相手ID" />
+          <input id="matchStation" placeholder="待ち合わせ駅" />
+          <button type="button" onclick="createMatch()">マッチ申請</button>
+        </div>
+        <div class="row">
+          <input id="matchId" type="number" placeholder="match_id" />
+          <input id="actorUserId" type="number" placeholder="判定者ID" />
+          <select id="decision"><option value="accept">accept</option><option value="decline">decline</option></select>
+          <button type="button" onclick="decideMatch()">判定</button>
+        </div>
+        <div class="row">
+          <input id="senderId" type="number" placeholder="送信者ID" />
+          <input id="messageText" placeholder="メッセージ" />
+          <button type="button" onclick="sendMessage()">送信</button>
+        </div>
+        <div id="matchResult" class="mono"></div>
+      </section>
+    </main>
+    <footer style="max-width:1000px;margin:12px auto;padding:0 12px;color:#5b6376;font-size:13px;">
+      20歳以上 / 同意ベース / 駅近候補のみ表示
+    </footer>
+    <script>
+      async function callApi(path, method, body) {
+        const res = await fetch(path, {
+          method,
+          headers: { "Content-Type": "application/json" },
+          body: body ? JSON.stringify(body) : null
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.detail || res.statusText);
+        return data;
+      }
+
+      async function loadPolicy() {
+        document.getElementById("policy").textContent = JSON.stringify(await callApi("/policy/safety", "GET"), null, 2);
+      }
+
+      async function createUser() {
+        try {
+          const data = await callApi("/users", "POST", {
+            nickname: document.getElementById("nickname").value,
+            email: document.getElementById("email").value,
+            age: Number(document.getElementById("age").value),
+            hobbies: document.getElementById("hobbies").value.split(",").map((x) => x.trim()).filter(Boolean),
+            preferred_stations: document.getElementById("stations").value.split(",").map((x) => x.trim()).filter(Boolean)
+          });
+          document.getElementById("createUserResult").textContent = JSON.stringify(data, null, 2);
+        } catch (e) {
+          document.getElementById("createUserResult").textContent = String(e.message || e);
+        }
+      }
+
+      async function loadVenues() {
+        try {
+          const station = document.getElementById("station").value;
+          const data = await callApi("/venues?station=" + encodeURIComponent(station), "GET");
+          document.getElementById("venues").textContent = JSON.stringify(data, null, 2);
+        } catch (e) {
+          document.getElementById("venues").textContent = String(e.message || e);
+        }
+      }
+
+      async function createMatch() {
+        try {
+          const data = await callApi("/matches", "POST", {
+            requester_id: Number(document.getElementById("requesterId").value),
+            target_user_id: Number(document.getElementById("targetId").value),
+            selected_station: document.getElementById("matchStation").value
+          });
+          document.getElementById("matchId").value = data.id || "";
+          document.getElementById("matchResult").textContent = JSON.stringify(data, null, 2);
+        } catch (e) {
+          document.getElementById("matchResult").textContent = String(e.message || e);
+        }
+      }
+
+      async function decideMatch() {
+        try {
+          const data = await callApi("/matches/" + Number(document.getElementById("matchId").value) + "/decision", "POST", {
+            actor_user_id: Number(document.getElementById("actorUserId").value),
+            action: document.getElementById("decision").value
+          });
+          document.getElementById("matchResult").textContent = JSON.stringify(data, null, 2);
+        } catch (e) {
+          document.getElementById("matchResult").textContent = String(e.message || e);
+        }
+      }
+
+      async function sendMessage() {
+        try {
+          const data = await callApi("/matches/" + Number(document.getElementById("matchId").value) + "/messages", "POST", {
+            sender_id: Number(document.getElementById("senderId").value),
+            message: document.getElementById("messageText").value
+          });
+          document.getElementById("matchResult").textContent = JSON.stringify(data, null, 2);
+        } catch (e) {
+          document.getElementById("matchResult").textContent = String(e.message || e);
+        }
+      }
+    </script>
+  </body>
+</html>

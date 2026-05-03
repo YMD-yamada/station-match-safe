@@ -4,6 +4,9 @@ services:
   - type: web
     name: station-match-safe
     runtime: docker
+    # Blueprint で省略すると既定が starter（有料）になるため明示する
+    # https://render.com/docs/blueprint-spec
+    plan: free
     autoDeploy: true
     healthCheckPath: /health
     envVars:

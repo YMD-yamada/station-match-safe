@@ -19,6 +19,8 @@ Render の **無料 Postgres は作成から30日で期限切れ**になりま�
 
 **Blueprint でも可**（`render.yaml` に DB定義はありません）。初回に **シークレット入力**を求められます。
 
+**料金表示について:** Blueprint の見積りが **約 $7/月** と出る場合、`render.yaml` の Web サービスで **`plan` が省略されると既定が starter（有料）** になることがあります。リポジトリの `render.yaml` には **`plan: free`** を入れてあります。GitHub の最新を取り込んでから再度 Blueprint を確認してください。
+
 1. [https://dashboard.render.com/](https://dashboard.render.com/) → **New +** → **Blueprint**
 2. リポジトリ `YMD-yamada/station-match-safe` を選択
 3. 画面の指示で **`DATABASE_URL`** に Neon の URI を貼り付け  

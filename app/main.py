@@ -7,6 +7,7 @@ from fastapi import Depends, FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from app.db import Base, engine, get_db
@@ -98,7 +99,10 @@ async def security_middleware(request: Request, call_next):
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "no-referrer"
     response.headers["Content-Security-Policy"] = (
-        "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'"
+        "default-src 'self'; "
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+        "font-src 'self' https://fonts.gstatic.com; "
+        "script-src 'self' 'unsafe-inline'"
     )
     return response
 
@@ -119,6 +123,44 @@ def _split_csv(value: str) -> list[str]:
 def _record_audit(db: Session, actor_id: int | None, event_type: str, detail: str) -> None:
     db.add(SafetyAuditLog(actor_id=actor_id, event_type=event_type, detail=detail[:500]))
     db.commit()
+
+
+def _blocked_user_ids(db: Session, user_id: int) -> set[int]:
+    blocked: set[int] = set()
+    rows = db.query(UserBlock).filter(
+        or_(UserBlock.blocker_id == user_id, UserBlock.blocked_user_id == user_id)
+    ).all()
+    for row in rows:
+        other = row.blocked_user_id if row.blocker_id == user_id else row.blocker_id
+        blocked.add(other)
+    return blocked
+
+
+def _matched_other_ids(db: Session, user_id: int) -> set[int]:
+    others: set[int] = set()
+    rows = (
+        db.query(MatchRequestRecord)
+        .filter(
+            or_(MatchRequestRecord.requester_id == user_id, MatchRequestRecord.target_user_id == user_id),
+            MatchRequestRecord.status.in_(["requested", "accepted"]),
+        )
+        .all()
+    )
+    for row in rows:
+        others.add(row.target_user_id if row.requester_id == user_id else row.requester_id)
+    return others
+
+
+def _public_user_card(user: MatchUser) -> dict:
+    return {
+        "id": user.id,
+        "nickname": user.nickname,
+        "age": user.age,
+        "public_bio": user.public_bio or "",
+        "hobbies": _split_csv(user.hobbies),
+        "drink_style": user.drink_style,
+        "preferred_stations": _split_csv(user.preferred_stations),
+    }
 
 
 def _seed_venues_if_empty(db: Session) -> None:
@@ -171,6 +213,65 @@ def create_user(payload: MatchUserCreate, db: Session = Depends(get_db)):
     db.refresh(user)
     _record_audit(db, user.id, "user_created", f"user_id={user.id}")
     return {"id": user.id, "is_age_verified": user.is_age_verified}
+
+
+@app.get("/discover/users")
+def discover_users(
+    me: int = Query(..., description="ログインユーザーID（MVPはクライアント保持）"),
+    station: str = Query("", description="絞り込み駅（任意）"),
+    limit: int = Query(24, le=80),
+    db: Session = Depends(get_db),
+):
+    me_user = db.query(MatchUser).filter(MatchUser.id == me).first()
+    if not me_user:
+        raise HTTPException(status_code=404, detail="user not found")
+    blocked = _blocked_user_ids(db, me)
+    matched_others = _matched_other_ids(db, me)
+    query = db.query(MatchUser).filter(MatchUser.id != me)
+    if station:
+        if station not in TAKASAKI_STATIONS:
+            raise HTTPException(status_code=400, detail="対象外の駅です")
+        query = query.filter(MatchUser.preferred_stations.contains(station))
+    candidates = query.order_by(MatchUser.created_at.desc()).limit(limit * 3).all()
+    items: list[dict] = []
+    for user in candidates:
+        if user.id in blocked or user.id in matched_others:
+            continue
+        items.append(_public_user_card(user))
+        if len(items) >= limit:
+            break
+    return {"count": len(items), "items": items}
+
+
+@app.get("/matches/mine")
+def list_my_matches(user_id: int = Query(...), db: Session = Depends(get_db)):
+    viewer = db.query(MatchUser).filter(MatchUser.id == user_id).first()
+    if not viewer:
+        raise HTTPException(status_code=404, detail="user not found")
+    rows = (
+        db.query(MatchRequestRecord)
+        .filter(
+            or_(MatchRequestRecord.requester_id == user_id, MatchRequestRecord.target_user_id == user_id),
+        )
+        .order_by(MatchRequestRecord.requested_at.desc())
+        .all()
+    )
+    payload = []
+    for m in rows:
+        other_id = m.target_user_id if m.requester_id == user_id else m.requester_id
+        other = db.query(MatchUser).filter(MatchUser.id == other_id).first()
+        payload.append(
+            {
+                "match_id": m.id,
+                "status": m.status,
+                "role": "requester" if m.requester_id == user_id else "target",
+                "selected_station": m.selected_station,
+                "requested_at": m.requested_at.isoformat(),
+                "accepted_at": m.accepted_at.isoformat() if m.accepted_at else None,
+                "other": _public_user_card(other) if other else None,
+            }
+        )
+    return {"items": payload}
 
 
 @app.get("/users/{user_id}")
@@ -231,6 +332,24 @@ def create_match_request(payload: MatchRequestCreate, db: Session = Depends(get_
     target = db.query(MatchUser).filter(MatchUser.id == payload.target_user_id).first()
     if not requester or not target:
         raise HTTPException(status_code=404, detail="user not found")
+    pending = (
+        db.query(MatchRequestRecord)
+        .filter(
+            or_(
+                (MatchRequestRecord.requester_id == payload.requester_id)
+                & (MatchRequestRecord.target_user_id == payload.target_user_id),
+                (MatchRequestRecord.requester_id == payload.target_user_id)
+                & (MatchRequestRecord.target_user_id == payload.requester_id),
+            ),
+            MatchRequestRecord.status.in_(["requested", "accepted"]),
+        )
+        .first()
+    )
+    if pending:
+        raise HTTPException(
+            status_code=409,
+            detail={"message": "すでに申請済み、またはマッチ済みです", "match_id": pending.id, "status": pending.status},
+        )
     if db.query(UserBlock).filter(
         UserBlock.blocker_id == payload.target_user_id, UserBlock.blocked_user_id == payload.requester_id
     ).first():

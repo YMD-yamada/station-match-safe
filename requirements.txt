@@ -6,3 +6,5 @@ email-validator
 psycopg2-binary
 httpx
 pytest
+bcrypt
+PyJWT

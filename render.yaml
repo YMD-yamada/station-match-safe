@@ -14,5 +14,14 @@ services:
         sync: false
       - key: ALLOW_ORIGINS
         sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRE_DAYS
+        value: "60"
+      # 任意: sync false で Render コンソールに手入力（未設定でも /metrics は公開）
+      # - key: METRICS_API_KEY
+      #   sync: false
+      # - key: AUDIT_LOG_API_KEY
+      #   sync: false
       - key: API_RATE_LIMIT_PER_MIN
         value: "60"

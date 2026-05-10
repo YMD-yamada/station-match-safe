@@ -26,6 +26,10 @@ Render の **無料 Postgres は作成から30日で期限切れ**になりま�
 3. 画面の指示で **`DATABASE_URL`** に Neon の URI を貼り付け  
 4. デプロイ完了後、Web の URL を確認（例: `https://station-match-safe.onrender.com`）
 
+### B-2. `JWT_SECRET` を設定（本番必須）
+
+Blueprint または Render の **Environment** に、**十分長いランダム値**の `JWT_SECRET` を設定します（GitHub にコミットしない）。未設定でも開発用デフォルトで起動しますが、**公開環境では必ず上書き**してください。
+
 ### C. CORS を本番 URL に固定（必須）
 
 1. Render → `station-match-safe` → **Environment**

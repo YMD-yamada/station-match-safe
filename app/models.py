@@ -12,6 +12,7 @@ class MatchUser(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     nickname: Mapped[str] = mapped_column(String(80), unique=True, index=True)
     email: Mapped[str] = mapped_column(String(200), unique=True, index=True)
+    password_hash: Mapped[str] = mapped_column(String(255), default="")
     phone: Mapped[str] = mapped_column(String(30), default="")
     age: Mapped[int] = mapped_column(Integer)
     is_age_verified: Mapped[bool] = mapped_column(Boolean, default=False)

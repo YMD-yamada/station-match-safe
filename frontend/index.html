@@ -3,71 +3,103 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#4f46e5" />
-    <title>駅のみマッチ</title>
+    <meta name="theme-color" content="#115e59" />
+    <title>駅のみマッチ｜駅前でゆるやかにつながる</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+JP:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap" rel="stylesheet" />
     <style>
       :root {
-        --bg: #f4f6fb;
+        --bg: #f1f5f5;
         --surface: #ffffff;
-        --text: #0f172a;
-        --muted: #64748b;
-        --line: #e2e8f0;
-        --primary: #4f46e5;
-        --primary-ink: #eef2ff;
-        --accent: #ec4899;
-        --success: #059669;
-        --danger: #dc2626;
-        --shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
-        --radius: 18px;
-        --nav-h: 64px;
+        --text: #0c1b1e;
+        --muted: #4b5563;
+        --line: #dfe6e8;
+        --rail: linear-gradient(90deg, #0f766e 0%, #0f766e 35%, #e2e8f0 35%, #e2e8f0 100%);
+        --primary: #0f766e;
+        --primary-dark: #115e59;
+        --primary-ink: #e0f2f1;
+        --accent: #b45309;
+        --success: #047857;
+        --danger: #b91c1c;
+        --shadow: 0 12px 32px rgba(12, 27, 30, 0.08), 0 2px 6px rgba(12, 27, 30, 0.04);
+        --radius: 16px;
+        --nav-h: 60px;
         --safe-b: env(safe-area-inset-bottom, 0px);
-        font-family: "DM Sans", "Noto Sans JP", system-ui, sans-serif;
+        font-family: "IBM Plex Sans JP", system-ui, -apple-system, sans-serif;
+        font-feature-settings: "palt" 1;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .font-display {
+        font-family: "Sora", "IBM Plex Sans JP", system-ui, sans-serif;
       }
       * { box-sizing: border-box; }
       body {
         margin: 0;
         color: var(--text);
-        background: radial-gradient(1200px 600px at 10% -10%, #eef2ff 0%, transparent 55%), var(--bg);
+        background:
+          radial-gradient(900px 520px at 18% -8%, rgba(15, 118, 110, 0.09), transparent 60%),
+          radial-gradient(700px 400px at 95% 8%, rgba(180, 83, 9, 0.06), transparent 55%),
+          var(--bg);
         min-height: 100dvh;
       }
       .app-header {
         position: sticky;
         top: 0;
         z-index: 30;
-        backdrop-filter: blur(12px);
-        background: rgba(255, 255, 255, 0.82);
-        border-bottom: 1px solid var(--line);
-        padding: 14px 16px 12px;
+        backdrop-filter: blur(14px);
+        background: rgba(255, 255, 255, 0.9);
+        border-bottom: 1px solid rgba(223, 230, 232, 0.95);
+        padding: 12px 16px 10px;
       }
       .brand {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
         gap: 12px;
       }
       .brand h1 {
         margin: 0;
         font-size: 17px;
-        letter-spacing: -0.02em;
+        letter-spacing: -0.03em;
+        font-weight: 700;
       }
       .brand small {
-        display: block;
-        margin-top: 2px;
+        display: inline-flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 6px;
         color: var(--muted);
         font-size: 12px;
         font-weight: 500;
       }
+      .tagline-chip {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        border: 1px solid rgba(15, 118, 110, 0.22);
+        background: rgba(224, 242, 241, 0.7);
+        color: var(--primary-dark);
+        font-size: 11px;
+        font-weight: 700;
+        padding: 4px 10px;
+        letter-spacing: 0.02em;
+      }
       .pill-btn {
-        border: 1px solid var(--line);
+        border: 1px solid rgba(223, 230, 232, 0.95);
         background: var(--surface);
         border-radius: 999px;
         padding: 8px 12px;
         font-size: 12px;
-        font-weight: 600;
+        font-weight: 700;
+        color: var(--primary-dark);
         cursor: pointer;
+        box-shadow: 0 6px 16px rgba(12, 27, 30, 0.05);
+      }
+      .pill-btn:focus-visible,
+      button:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
       }
       main.shell {
         max-width: 520px;
@@ -81,26 +113,81 @@
         to { opacity: 1; transform: translateY(0); }
       }
       .hero {
-        padding: 18px 4px 8px;
+        padding: 16px 2px 6px;
+        position: relative;
       }
-      .hero h2 {
-        margin: 0 0 8px;
-        font-size: 26px;
-        letter-spacing: -0.03em;
-        line-height: 1.25;
+      .hero::before {
+        content: "";
+        display: block;
+        height: 3px;
+        width: 48px;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--primary), #99f6e4);
+        margin-bottom: 14px;
       }
-      .hero p {
+      .hero h2.font-display {
+        margin: 0 0 10px;
+        font-size: 25px;
+        letter-spacing: -0.035em;
+        line-height: 1.28;
+        font-weight: 700;
+        color: #042f2e;
+      }
+      .hero p.lead {
         margin: 0;
         color: var(--muted);
-        line-height: 1.65;
+        line-height: 1.7;
         font-size: 14px;
+        font-weight: 500;
+      }
+      .trust-list {
+        list-style: none;
+        padding: 0;
+        margin: 12px 0 0;
+        display: grid;
+        gap: 8px;
+      }
+      .trust-item {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 10px 12px;
+        align-items: start;
+        padding: 11px 12px;
+        border-radius: 14px;
+        border: 1px solid rgba(223, 230, 232, 0.95);
+        background: rgba(255, 255, 255, 0.75);
+      }
+      .trust-ic {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: var(--primary-ink);
+        color: var(--primary-dark);
+        font-size: 16px;
+        font-weight: 800;
+      }
+      .trust-item strong {
+        display: block;
+        font-size: 13px;
+        letter-spacing: 0.01em;
+        color: #0f172a;
+      }
+      .trust-item span {
+        display: block;
+        margin-top: 2px;
+        font-size: 12px;
+        color: var(--muted);
+        line-height: 1.55;
+        font-weight: 500;
       }
       .card {
         background: var(--surface);
         border-radius: var(--radius);
-        border: 1px solid rgba(226, 232, 240, 0.9);
+        border: 1px solid rgba(223, 230, 232, 0.95);
         box-shadow: var(--shadow);
-        padding: 14px;
+        padding: 16px;
       }
       label.lbl {
         display: block;
@@ -118,6 +205,12 @@
         outline: none;
         background: #fff;
       }
+      input:focus-visible,
+      select:focus-visible,
+      textarea:focus-visible {
+        border-color: rgba(15, 118, 110, 0.45);
+        box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+      }
       textarea { min-height: 84px; resize: vertical; }
       .primary {
         width: 100%;
@@ -127,9 +220,13 @@
         font-weight: 700;
         font-size: 15px;
         color: #fff;
-        background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        background: linear-gradient(135deg, var(--primary), var(--primary-dark));
         cursor: pointer;
         margin-top: 12px;
+        box-shadow: 0 10px 26px rgba(15, 118, 110, 0.25);
+      }
+      .primary:active {
+        transform: translateY(1px);
       }
       .ghost {
         width: 100%;
@@ -158,9 +255,9 @@
         color: var(--muted);
       }
       .chip.on {
-        border-color: rgba(79, 70, 229, 0.35);
+        border-color: rgba(15, 118, 110, 0.35);
         background: var(--primary-ink);
-        color: var(--primary);
+        color: var(--primary-dark);
       }
       .disc-bar {
         display: flex;
@@ -179,8 +276,9 @@
         margin-bottom: 12px;
       }
       .user-card .banner {
-        height: 108px;
-        background: linear-gradient(135deg, #c7d2fe, #fbcfe8);
+        height: 104px;
+        background: radial-gradient(circle at 20% 20%, rgba(153, 246, 228, 0.55), transparent 52%),
+          linear-gradient(120deg, #134e4a 0%, #0f766e 38%, #ccfbf1 100%);
       }
       .user-card .body { padding: 12px 14px 14px; position: relative; }
       .avatar {
@@ -194,7 +292,7 @@
         place-items: center;
         font-weight: 800;
         font-size: 26px;
-        color: var(--primary);
+        color: var(--primary-dark);
         box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
       }
       .title-row {
@@ -256,7 +354,7 @@
         border: none;
         color: #fff;
         cursor: pointer;
-        background: linear-gradient(135deg, #ec4899, #f97316);
+        background: linear-gradient(135deg, #047857 0%, #10b981 52%, var(--accent) 160%);
       }
       .tabs {
         display: grid;
@@ -275,9 +373,9 @@
         color: var(--muted);
       }
       .tab.on {
-        border-color: rgba(79, 70, 229, 0.35);
+        border-color: rgba(15, 118, 110, 0.32);
         background: var(--primary-ink);
-        color: var(--primary);
+        color: var(--primary-dark);
       }
       .thread-item {
         display: flex;
@@ -297,7 +395,7 @@
         display: grid;
         place-items: center;
         font-weight: 800;
-        color: var(--primary);
+        color: var(--primary-dark);
         background: var(--primary-ink);
       }
       .thread-meta h4 { margin: 0; font-size: 14px; }
@@ -342,15 +440,34 @@
         color: var(--muted);
         font-weight: 700;
         font-size: 11px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 2px;
       }
       .nav-btn.on {
-        color: var(--primary);
-        background: var(--primary-ink);
+        color: var(--primary-dark);
+        background: rgba(224, 242, 241, 0.85);
       }
-      .nav-btn span {
+      .nav-ic {
+        width: 22px;
+        height: 22px;
+        stroke: currentColor;
+        stroke-width: 1.95;
+        fill: none;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      .nav-ic circle,
+      .nav-ic path {
+        fill: none;
+        stroke: currentColor;
+      }
+      .nav-lbl {
         display: block;
-        font-size: 18px;
-        margin-bottom: 2px;
+        font-size: 10px;
+        letter-spacing: 0.04em;
       }
       .sheet-overlay {
         position: fixed;
@@ -377,6 +494,80 @@
       }
       .sheet.show { transform: translateY(0); }
       .sheet h3 { margin: 6px 0 10px; font-size: 16px; }
+      .sheet-handle {
+        width: 40px;
+        height: 5px;
+        border-radius: 999px;
+        background: rgba(148, 163, 184, 0.5);
+        margin: 4px auto 10px;
+      }
+      #screen-onboarding .tabs {
+        grid-template-columns: 1fr 1fr;
+        margin-bottom: 10px;
+      }
+      .consent-row {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        margin-top: 14px;
+        padding: 10px 11px;
+        border-radius: 12px;
+        border: 1px dashed rgba(15, 118, 110, 0.28);
+        background: rgba(240, 253, 250, 0.45);
+      }
+      .consent-row input[type="checkbox"] {
+        margin-top: 3px;
+        width: auto;
+      }
+      .consent-copy {
+        font-size: 12px;
+        line-height: 1.6;
+        color: #374151;
+        font-weight: 500;
+      }
+      .policy-body {
+        max-height: 52dvh;
+        overflow: auto;
+        padding-right: 4px;
+        margin-bottom: 12px;
+      }
+      .policy-lead {
+        font-size: 12px;
+        line-height: 1.65;
+        color: #92400e;
+        background: #fffbeb;
+        border-radius: 12px;
+        padding: 10px 12px;
+        border: 1px solid rgba(251, 191, 36, 0.45);
+        margin: 0 0 14px;
+        font-weight: 600;
+      }
+      .policy-h {
+        font-size: 13px;
+        font-weight: 800;
+        color: var(--primary-dark);
+        margin: 12px 0 6px;
+        letter-spacing: 0.01em;
+      }
+      .policy-p {
+        font-size: 13px;
+        line-height: 1.72;
+        color: #374151;
+        margin: 0 0 4px;
+        font-weight: 500;
+      }
+      .muted-note {
+        font-size: 12px;
+        line-height: 1.62;
+        color: var(--muted);
+        margin: 8px 0 2px;
+        font-weight: 500;
+      }
+      .divider {
+        height: 1px;
+        background: var(--line);
+        margin: 14px 0;
+      }
       .toast {
         position: fixed;
         left: 14px;
@@ -417,8 +608,8 @@
       }
       .bubble.me {
         align-self: flex-end;
-        background: var(--primary-ink);
-        border: 1px solid rgba(79, 70, 229, 0.25);
+        background: rgba(224, 242, 241, 0.85);
+        border: 1px solid rgba(15, 118, 110, 0.2);
       }
       .bubble.them {
         align-self: flex-start;
@@ -441,10 +632,11 @@
       }
       .kv span { color: var(--muted); font-weight: 600; }
       .legal {
-        font-size: 12px;
-        color: var(--muted);
-        line-height: 1.55;
-        margin-top: 10px;
+        font-size: 11px;
+        color: #6b7280;
+        line-height: 1.65;
+        margin-top: 12px;
+        font-weight: 500;
       }
       .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
       body.no-nav .bottom-nav { display: none; }
@@ -455,49 +647,96 @@
     <header class="app-header">
       <div class="brand">
         <div>
-          <h1>駅のみマッチ</h1>
-          <small id="subTitle">高崎線・駅近だけに絞ったマッチング</small>
+          <h1 class="font-display">駅のみマッチ</h1>
+          <small id="subSubtitle"
+            ><span class="tagline-chip">JR高崎線エリア限定</span
+            ><span id="subTitle">駅まわりだけでゆるやかに出会える</span></small
+          >
         </div>
-        <button type="button" class="pill-btn" id="btnSafety">安全について</button>
+        <button type="button" class="pill-btn" id="btnSafety">安全・法律の概要</button>
       </div>
     </header>
 
     <main class="shell">
       <section id="screen-onboarding" class="screen">
         <div class="hero">
-          <h2>駅でつながる、<br />やさしい始め方。</h2>
-          <p>20歳以上限定。双方の同意があるまで連絡先は不要です。まずは駅と短時間の飲みから。</p>
+          <h2 class="font-display">駅できっかけ、<br />生活圏だけで。</h2>
+          <p class="lead">
+            駅前・駅周辺の短い一杯から。まずはニックネーム・メール・パスワードだけで開始し、ひとことやよく使う駅は<strong>後から</strong
+            >マイページで足せます。<strong>再ログインはメールとパスワード</strong>です（ユーザーIDは不要）。
+          </p>
+          <ul class="trust-list" aria-label="このサービスの考え方">
+            <li class="trust-item">
+              <span class="trust-ic" aria-hidden="true">駅</span>
+              <div>
+                <strong>地域と駅に寄せたマッチ</strong><span>高崎線の駅リストに縛られた条件付き検索のみ（生活圏から外れません）。</span>
+              </div>
+            </li>
+            <li class="trust-item">
+              <span class="trust-ic" aria-hidden="true">20</span>
+              <div>
+                <strong>20歳以上の自分申告</strong
+                ><span>入力はチェックのみで、身分証の提出による年齢確認は運営が必ず実施するものではありません。</span>
+              </div>
+            </li>
+            <li class="trust-item">
+              <span class="trust-ic" aria-hidden="true">⇄</span>
+              <div>
+                <strong>双方の明示的同意</strong
+                ><span>承認前はやりとりしない設計です。チャット後も駅前など安全な環境での短時間運用を想定してください。</span>
+              </div>
+            </li>
+          </ul>
         </div>
-        <div class="card">
+        <div class="tabs auth-tabs" role="tablist" aria-label="開始方法">
+          <button type="button" class="tab on" data-auth="register" id="tabRegister">新規登録</button>
+          <button type="button" class="tab" data-auth="login" id="tabLogin">ログイン</button>
+        </div>
+        <div class="card" id="authRegisterPanel">
           <label class="lbl">ニックネーム</label>
           <input id="regNick" maxlength="80" placeholder="例: ゆうこ" autocomplete="nickname" />
 
-          <label class="lbl">メール（ログイン用途・公開されません）</label>
+          <label class="lbl">メール（ログイン用・一覧では非公開）</label>
           <input id="regMail" type="email" placeholder="you@example.com" autocomplete="email" />
 
           <label class="lbl">年齢</label>
           <input id="regAge" type="number" min="20" max="99" placeholder="20以上" inputmode="numeric" />
 
-          <label class="lbl">ひとこと（任意）</label>
-          <textarea id="regBio" maxlength="500" placeholder="よく行く時間帯や、駅周りでゆったり派など"></textarea>
+          <label class="lbl">パスワード（8文字以上）</label>
+          <input id="regPass" type="password" autocomplete="new-password" placeholder="他人と共有しない強めのものを" />
 
-          <label class="lbl">趣味タグ（カンマ区切り）</label>
-          <input id="regHobby" placeholder="ジャズ,ランニング,ダンス" />
+          <p class="muted-note">
+            メール／パスワードはログインのみに使われ、この端末のブラウザ内にログイン状態（トークン）を保存します。共有端末・公共環境では<strong>ログアウト後に閉じる</strong>こと、サイトは<strong
+              >HTTPSのみ</strong
+            >で提供してください。
+          </p>
 
-          <label class="lbl">よく使う駅（カンマ区切り）</label>
-          <input id="regSta" placeholder="熊谷,深谷,本庄" />
-
-          <label class="lbl">飲みスタイル</label>
-          <select id="regDrink">
-            <option value="casual">カジュアルに一杯</option>
-            <option value="quiet">落ち着いたお店</option>
-            <option value="lively">にぎやかなお店</option>
-          </select>
-
-          <button type="button" class="primary" id="btnRegister">はじめる</button>
-          <button type="button" class="ghost" id="btnResume">保存済みのユーザーIDで続ける</button>
+          <label class="consent-row">
+            <input id="agreeTerms" type="checkbox" autocomplete="off" />
+            <span class="consent-copy"
+              >「安全・法律の概要」を読み、年齢の申告や禁止事項、個人情報の取り扱い（要約）に同意します。問題がない場合のみ登録します。</span
+            >
+          </label>
+          <button type="button" class="primary" id="btnRegister">この内容ではじめる</button>
         </div>
-        <p class="legal">利用により安全ポリシーに同意したものとみなします。架空プロフィールは禁止です。</p>
+        <div class="card" id="authLoginPanel" hidden>
+          <label class="lbl">メール</label>
+          <input id="loginMail" type="email" autocomplete="email" placeholder="登録したメールアドレス" />
+
+          <label class="lbl">パスワード</label>
+          <input id="loginPass" type="password" autocomplete="current-password" />
+
+          <button type="button" class="primary" id="btnLogin">ログイン</button>
+        </div>
+        <p class="legal">
+          ドラフトですがひな型を公開しています:
+          <a href="/legal/terms.html">利用規約（ドラフト）</a>
+          /
+          <a href="/legal/privacy.html">プライバシー（ドラフト）</a>
+          ・法令遵守と相手へのマナーを守ってください。虚偽のプロフィール、迷惑行為は停止対象となる場合があります。本格的なサービス公開前には<strong
+            >弁護士等による条文・表記のレビュー</strong
+          >を前提とします。
+        </p>
       </section>
 
       <section id="screen-discover" class="screen">
@@ -524,30 +763,82 @@
             <div class="avatar" id="meAvatar">?</div>
             <div>
               <div style="font-weight:800; font-size:18px;" id="meNick">ゲスト</div>
-              <div style="color:var(--muted); font-size:13px; font-weight:600;">ユーザーID <span id="meId">—</span></div>
+              <div style="color:var(--muted); font-size:13px; font-weight:600;">内部ID <span id="meId">—</span>（再ログインには不要）</div>
             </div>
           </div>
           <div class="kv">
             <span>メール</span><div id="meMail">—</div>
             <span>飲みスタイル</span><div id="meDrink">—</div>
           </div>
-          <button type="button" class="btn-outline" id="btnLogout" style="margin-top:12px;">ログアウト（この端末の保存を消す）</button>
+          <p id="meAgeNote" class="muted-note" hidden></p>
+          <p style="margin:12px 0 0; font-size:13px; font-weight:700; color:var(--text);">プロフィール（あとから編集）</p>
+          <label class="lbl">ニックネーム</label>
+          <input id="meEditNick" maxlength="80" />
+          <label class="lbl">ひとこと</label>
+          <textarea id="meEditBio" maxlength="500"></textarea>
+          <label class="lbl">趣味（カンマ区切り）</label>
+          <input id="meEditHobby" placeholder="ジャズ,ランニング" />
+          <label class="lbl">よく使う駅（カンマ区切り）</label>
+          <input id="meEditSta" placeholder="熊谷,深谷,本庄" />
+          <label class="lbl">飲みスタイル</label>
+          <select id="meEditDrink">
+            <option value="casual">カジュアルに一杯</option>
+            <option value="quiet">落ち着いたお店</option>
+            <option value="lively">にぎやかなお店</option>
+          </select>
+          <label class="lbl">電話（任意・非公開運用推奨）</label>
+          <input id="meEditPhone" maxlength="30" placeholder="空欄のままでも可" />
+          <button type="button" class="primary" id="btnSaveProfile">プロフィールを保存</button>
+
+          <p style="margin:16px 0 0; font-size:13px; font-weight:700;">パスワード変更</p>
+          <label class="lbl">現在のパスワード</label>
+          <input id="meCurPass" type="password" autocomplete="current-password" />
+          <label class="lbl">新しいパスワード</label>
+          <input id="meNewPass" type="password" autocomplete="new-password" />
+          <button type="button" class="btn-outline" id="btnChangePass" style="margin-top:10px;">パスワードを更新</button>
+
+          <button type="button" class="btn-outline" id="btnLogout" style="margin-top:16px;">ログアウト（この端末のトークンを消す）</button>
         </div>
       </section>
     </main>
 
     <nav class="bottom-nav" aria-label="メインメニュー">
       <div class="nav-inner">
-        <button type="button" class="nav-btn on" data-go="discover"><span>🔎</span>さがす</button>
-        <button type="button" class="nav-btn" data-go="connections"><span>💞</span>つながり</button>
-        <button type="button" class="nav-btn" data-go="chats"><span>💬</span>チャット</button>
-        <button type="button" class="nav-btn" data-go="me"><span>👤</span>マイページ</button>
+        <button type="button" class="nav-btn on" data-go="discover" aria-label="さがす">
+          <svg class="nav-ic" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="7" />
+            <path d="M21 21l-4.2-4.2" />
+          </svg>
+          <span class="nav-lbl">さがす</span>
+        </button>
+        <button type="button" class="nav-btn" data-go="connections" aria-label="つながり">
+          <svg class="nav-ic" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="9.5" cy="8.5" r="3.2" />
+            <circle cx="16.8" cy="9.2" r="2.7" />
+            <path d="M3 20c0-3.6 3.9-6.8 9-6.8s9 3 9 6.8" />
+          </svg>
+          <span class="nav-lbl">つながり</span>
+        </button>
+        <button type="button" class="nav-btn" data-go="chats" aria-label="チャット">
+          <svg class="nav-ic" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 6h14a3 3 0 013 3v6a3 3 0 01-3 3h-7l-4 4v-4H4a3 3 0 01-3-3V9a3 3 0 013-3z" />
+          </svg>
+          <span class="nav-lbl">チャット</span>
+        </button>
+        <button type="button" class="nav-btn" data-go="me" aria-label="マイページ">
+          <svg class="nav-ic" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M12 12a4 4 0 100-8 4 4 0 000 8z" />
+            <path d="M4 20a8 8 0 0116 0" />
+          </svg>
+          <span class="nav-lbl">マイページ</span>
+        </button>
       </div>
     </nav>
 
     <div class="sheet-overlay" id="sheetBackdrop"></div>
     <div class="sheet" id="stationSheet" role="dialog" aria-modal="true">
-      <h3>待ち合わせはどの駅？</h3>
+      <div class="sheet-handle" aria-hidden="true"></div>
+      <h3 class="font-display">待ち合わせはどの駅？</h3>
       <p style="margin:0 0 10px; color:var(--muted); font-size:13px; line-height:1.5;">相手が承認するとチャットが開きます。初回は駅前・人通りのある時間帯を推奨します。</p>
       <label class="lbl">駅</label>
       <select id="pickStation"></select>
@@ -556,6 +847,7 @@
     </div>
 
     <div class="sheet" id="chatSheet" role="dialog" aria-modal="true">
+      <div class="sheet-handle" aria-hidden="true"></div>
       <div class="chat-head">
         <button type="button" class="btn-outline" id="btnCloseChat" style="width:auto; padding:8px 10px;">戻る</button>
         <div style="flex:1;">
@@ -571,15 +863,17 @@
     </div>
 
     <div class="sheet" id="policySheet" role="dialog" aria-modal="true">
-      <h3>安全ポリシー</h3>
-      <pre id="policyBody" style="white-space:pre-wrap; font-size:13px; color:#334155; line-height:1.55; margin:0;"></pre>
+      <div class="sheet-handle" aria-hidden="true"></div>
+      <h3 class="font-display">安全・法律・個人情報（概要）</h3>
+      <p class="muted-note" style="margin-top: -4px">本文は開発中MVPの取り決めであり、公開サービスとしては規約類の別途用意が前提です。</p>
+      <div id="policyBody" class="policy-body"></div>
       <button type="button" class="primary" id="btnClosePolicy">閉じる</button>
     </div>
 
     <div class="toast" id="toast"></div>
 
     <script>
-      const LS_UID = "sm_uid";
+      const LS_TOKEN = "sm_token";
       const LS_NICK = "sm_nick";
       const stations = ["上尾","北上尾","桶川","北本","鴻巣","北鴻巣","吹上","行田","熊谷","籠原","深谷","岡部","本庄"];
 
@@ -590,6 +884,15 @@
         pickTarget: null,
         activeChat: null,
       };
+
+      function getToken() {
+        return localStorage.getItem(LS_TOKEN);
+      }
+
+      function authHeaders() {
+        const t = getToken();
+        return t ? { Authorization: `Bearer ${t}` } : {};
+      }
 
       function toast(msg) {
         const el = document.getElementById("toast");
@@ -602,7 +905,7 @@
       async function api(path, opts = {}) {
         const res = await fetch(path, {
           ...opts,
-          headers: { "Content-Type": "application/json", ...(opts.headers || {}) },
+          headers: { "Content-Type": "application/json", ...authHeaders(), ...(opts.headers || {}) },
         });
         let data = null;
         try { data = await res.json(); } catch (_) {}
@@ -636,19 +939,50 @@
         const sub = document.getElementById("subTitle");
         sub.textContent =
           name === "discover"
-            ? "駅でフィルタして、気になる人に招待を送る"
+            ? "駅で絞って、安全第一の短文プロフィールから"
             : name === "connections"
-            ? "届いた申請の承認・辞退はここから"
+            ? "承認・辞退・マッチ状況（双方同意のみ連絡可）"
             : name === "chats"
-            ? "マッチ後のみチャットできます"
+            ? "成立後のチャットのみ。公共の場での短時間を推奨"
             : name === "me"
-            ? "プロフィールとログアウト"
-            : "高崎線・駅近だけに絞ったマッチング";
+            ? "プロフィール・パスワード・ログアウト"
+            : "駅まわりだけ／高崎線沿線のゆるやかなマッチ";
+      }
+
+      function renderPolicy(pol) {
+        const box = document.getElementById("policyBody");
+        box.innerHTML = "";
+        const lead =
+          typeof pol.notice_not_legal_advice === "string" ? pol.notice_not_legal_advice : "";
+        if (lead) {
+          const p = document.createElement("p");
+          p.className = "policy-lead";
+          p.textContent = lead;
+          box.appendChild(p);
+        }
+        const secs = Array.isArray(pol.sections) ? pol.sections : [];
+        secs.forEach((sec) => {
+          const h = document.createElement("h4");
+          h.className = "policy-h";
+          h.textContent = sec.title || "";
+          const bp = document.createElement("p");
+          bp.className = "policy-p";
+          bp.textContent = sec.body || "";
+          box.appendChild(h);
+          box.appendChild(bp);
+        });
+        if (!box.childNodes.length) {
+          const pre = document.createElement("pre");
+          pre.className = "policy-p";
+          pre.style.whiteSpace = "pre-wrap";
+          pre.textContent = JSON.stringify(pol, null, 2);
+          box.appendChild(pre);
+        }
       }
 
       function navTo(go) {
-        if (!state.uid) {
-          toast("先にプロフィール登録を完了してください");
+        if (!getToken() || !state.uid) {
+          toast("新規登録するか、ログインしてください");
           showScreen("onboarding");
           return;
         }
@@ -698,9 +1032,10 @@
         if (!state.uid) return;
         box.innerHTML = `<div class="empty">読み込み中…</div>`;
         try {
-          const qs = new URLSearchParams({ me: String(state.uid) });
+          const qs = new URLSearchParams();
           if (state.filterStation) qs.set("station", state.filterStation);
-          const data = await api(`/discover/users?${qs.toString()}`, { method: "GET" });
+          const q = qs.toString();
+          const data = await api(`/discover${q ? `?${q}` : ""}`, { method: "GET" });
           if (!data.items.length) {
             box.innerHTML = `<div class="empty">この条件ではまだユーザーが見つかりません。<br />駅フィルタを変えるか、あとでもう一度試してください。</div>`;
             return;
@@ -764,7 +1099,6 @@
           await api("/matches", {
             method: "POST",
             body: JSON.stringify({
-              requester_id: state.uid,
               target_user_id: state.pickTarget.id,
               selected_station: st,
             }),
@@ -791,7 +1125,7 @@
         const root = document.getElementById("connPanels");
         root.innerHTML = `<div class="empty">読み込み中…</div>`;
         try {
-          const data = await api(`/matches/mine?user_id=${encodeURIComponent(String(state.uid))}`, { method: "GET" });
+          const data = await api("/matches/mine", { method: "GET" });
           const p = partitionMatches(data.items || []);
           root.innerHTML = "";
           const panels = {
@@ -855,7 +1189,7 @@
         try {
           await api(`/matches/${row.match_id}/decision`, {
             method: "POST",
-            body: JSON.stringify({ actor_user_id: state.uid, action: ok ? "accept" : "decline" }),
+            body: JSON.stringify({ action: ok ? "accept" : "decline" }),
           });
           toast(ok ? "承認しました" : "辞退しました");
           loadConnections();
@@ -869,7 +1203,7 @@
         const box = document.getElementById("chatList");
         box.innerHTML = `<div class="empty">読み込み中…</div>`;
         try {
-          const data = await api(`/matches/mine?user_id=${encodeURIComponent(String(state.uid))}`, { method: "GET" });
+          const data = await api("/matches/mine", { method: "GET" });
           const matched = (data.items || []).filter((x) => x.status === "accepted");
           if (!matched.length) {
             box.innerHTML = `<div class="empty">マッチが成立するとチャットが利用できます。<br />まずは「さがす」から招待を送ってみましょう。</div>`;
@@ -910,10 +1244,7 @@
         const box = document.getElementById("chatMsgs");
         box.innerHTML = `<div class="empty">読み込み中…</div>`;
         try {
-          const data = await api(
-            `/matches/${row.match_id}/messages?actor_user_id=${encodeURIComponent(String(state.uid))}`,
-            { method: "GET" },
-          );
+          const data = await api(`/matches/${row.match_id}/messages`, { method: "GET" });
           box.innerHTML = "";
           (data.items || []).forEach((m) => {
             const bubble = document.createElement("div");
@@ -934,7 +1265,7 @@
         try {
           await api(`/matches/${row.match_id}/messages`, {
             method: "POST",
-            body: JSON.stringify({ sender_id: state.uid, message: text }),
+            body: JSON.stringify({ message: text }),
           });
           document.getElementById("chatInput").value = "";
           await refreshMessages();
@@ -946,13 +1277,30 @@
       async function loadMe() {
         if (!state.uid) return;
         try {
-          const me = await api(`/users/${state.uid}`, { method: "GET" });
+          const me = await api("/users/me", { method: "GET" });
           document.getElementById("meNick").textContent = me.nickname;
           document.getElementById("meAvatar").textContent = initials(me.nickname);
           document.getElementById("meId").textContent = String(me.id);
-          document.getElementById("meMail").textContent = localStorage.getItem("sm_mail") || "（端末にのみ保存）";
+          document.getElementById("meMail").textContent = me.email || "—";
           const styles = { casual: "カジュアルに一杯", quiet: "落ち着いたお店", lively: "にぎやかなお店" };
           document.getElementById("meDrink").textContent = styles[me.drink_style] || me.drink_style;
+
+          document.getElementById("meEditNick").value = me.nickname || "";
+          document.getElementById("meEditBio").value = me.public_bio || "";
+          document.getElementById("meEditHobby").value = (me.hobbies || []).join(", ");
+          document.getElementById("meEditSta").value = (me.preferred_stations || []).join(", ");
+          document.getElementById("meEditDrink").value = me.drink_style || "casual";
+          document.getElementById("meEditPhone").value = me.phone || "";
+          document.getElementById("meCurPass").value = "";
+          document.getElementById("meNewPass").value = "";
+          const ageEl = document.getElementById("meAgeNote");
+          if (me.age_declaration_note) {
+            ageEl.textContent = me.age_declaration_note;
+            ageEl.hidden = false;
+          } else {
+            ageEl.textContent = "";
+            ageEl.hidden = true;
+          }
         } catch (e) {
           toast(e.message);
         }
@@ -967,27 +1315,42 @@
           .replace(/'/g, "&#039;");
       }
 
+      function applySessionFromTokenResponse(res) {
+        if (!res || !res.access_token) throw new Error("トークンを取得できませんでした");
+        localStorage.setItem(LS_TOKEN, res.access_token);
+        state.uid = res.user_id;
+        state.nickname = res.nickname || "";
+        if (res.nickname) localStorage.setItem(LS_NICK, res.nickname);
+      }
+
       async function register() {
         const payload = {
           nickname: document.getElementById("regNick").value.trim(),
           email: document.getElementById("regMail").value.trim(),
           age: Number(document.getElementById("regAge").value),
-          public_bio: document.getElementById("regBio").value.trim(),
-          hobbies: document.getElementById("regHobby").value.split(",").map((x) => x.trim()).filter(Boolean),
-          preferred_stations: document.getElementById("regSta").value.split(",").map((x) => x.trim()).filter(Boolean),
-          drink_style: document.getElementById("regDrink").value,
+          password: document.getElementById("regPass").value,
         };
         if (payload.nickname.length < 2) return toast("ニックネームを入力してください");
         if (!payload.email) return toast("メールを入力してください");
         if (!payload.age || payload.age < 20) return toast("20歳以上のみ登録できます");
+        if (!payload.password || payload.password.length < 8) return toast("パスワードは8文字以上にしてください");
+        const agree = document.getElementById("agreeTerms");
+        if (!agree.checked) return toast("「安全・法律の概要」に同意する場合はチェックを入れてください");
         try {
-          const res = await api("/users", { method: "POST", body: JSON.stringify(payload) });
-          state.uid = res.id;
-          state.nickname = payload.nickname;
-          localStorage.setItem(LS_UID, String(res.id));
-          localStorage.setItem(LS_NICK, payload.nickname);
-          localStorage.setItem("sm_mail", payload.email);
-          toast("ようこそ！さっそくさがしてみましょう");
+          const res = await fetch("/users", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            const d = data.detail;
+            throw new Error(typeof d === "string" ? d : d && d.message ? d.message : `エラー (${res.status})`);
+          }
+          applySessionFromTokenResponse(data);
+          document.getElementById("regPass").value = "";
+          agree.checked = false;
+          toast("ようこそ！プロフィールはマイページからいつでも埋められます");
           renderStationFilters();
           navTo("discover");
         } catch (e) {
@@ -995,25 +1358,125 @@
         }
       }
 
-      function resumeById() {
-        const id = prompt("ユーザーID（数字）を入力してください");
-        if (!id) return;
-        const n = Number(id);
-        if (!Number.isFinite(n)) return toast("数字のみ入力してください");
-        state.uid = n;
-        localStorage.setItem(LS_UID, String(n));
-        toast("復帰しました");
-        renderStationFilters();
-        navTo("discover");
+      async function login() {
+        const payload = {
+          email: document.getElementById("loginMail").value.trim(),
+          password: document.getElementById("loginPass").value,
+        };
+        if (!payload.email) return toast("メールを入力してください");
+        if (!payload.password) return toast("パスワードを入力してください");
+        try {
+          const res = await fetch("/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            const d = data.detail;
+            throw new Error(typeof d === "string" ? d : `エラー (${res.status})`);
+          }
+          applySessionFromTokenResponse(data);
+          document.getElementById("loginPass").value = "";
+          toast("ログインしました");
+          renderStationFilters();
+          navTo("discover");
+        } catch (e) {
+          toast(e.message);
+        }
+      }
+
+      function setAuthPanel(mode) {
+        const reg = document.getElementById("authRegisterPanel");
+        const log = document.getElementById("authLoginPanel");
+        const isReg = mode === "register";
+        reg.hidden = !isReg;
+        log.hidden = isReg;
+        document.getElementById("tabRegister").classList.toggle("on", isReg);
+        document.getElementById("tabLogin").classList.toggle("on", !isReg);
+      }
+
+      async function saveProfile() {
+        const body = {
+          nickname: document.getElementById("meEditNick").value.trim(),
+          public_bio: document.getElementById("meEditBio").value.trim(),
+          hobbies: document
+            .getElementById("meEditHobby")
+            .value.split(",")
+            .map((x) => x.trim())
+            .filter(Boolean),
+          preferred_stations: document
+            .getElementById("meEditSta")
+            .value.split(",")
+            .map((x) => x.trim())
+            .filter(Boolean),
+          drink_style: document.getElementById("meEditDrink").value,
+          phone: document.getElementById("meEditPhone").value.trim(),
+        };
+        if (body.nickname.length < 2) return toast("ニックネームは2文字以上にしてください");
+        try {
+          const me = await api("/users/me", { method: "PATCH", body: JSON.stringify(body) });
+          state.nickname = me.nickname;
+          localStorage.setItem(LS_NICK, me.nickname);
+          toast("プロフィールを保存しました");
+          await loadMe();
+        } catch (e) {
+          toast(e.message);
+        }
+      }
+
+      async function changePassword() {
+        const current_password = document.getElementById("meCurPass").value;
+        const new_password = document.getElementById("meNewPass").value;
+        if (!current_password || !new_password) return toast("現在と新しいパスワードを入力してください");
+        if (new_password.length < 8) return toast("新しいパスワードは8文字以上にしてください");
+        try {
+          await api("/users/me/password", {
+            method: "POST",
+            body: JSON.stringify({ current_password, new_password }),
+          });
+          document.getElementById("meCurPass").value = "";
+          document.getElementById("meNewPass").value = "";
+          toast("パスワードを更新しました");
+        } catch (e) {
+          toast(e.message);
+        }
+      }
+
+      async function restoreSession() {
+        const tok = getToken();
+        if (!tok) {
+          showScreen("onboarding");
+          setAuthPanel("register");
+          return;
+        }
+        try {
+          const me = await api("/users/me", { method: "GET" });
+          state.uid = me.id;
+          state.nickname = me.nickname || "";
+          renderStationFilters();
+          navTo("discover");
+        } catch (_) {
+          localStorage.removeItem(LS_TOKEN);
+          localStorage.removeItem(LS_NICK);
+          state.uid = null;
+          showScreen("onboarding");
+          setAuthPanel("register");
+          toast("ログインの有効期限が切れたか、無効です。再度ログインしてください");
+        }
       }
 
       function boot() {
         document.getElementById("btnRegister").addEventListener("click", register);
-        document.getElementById("btnResume").addEventListener("click", resumeById);
+        document.getElementById("btnLogin").addEventListener("click", login);
+        document.getElementById("tabRegister").addEventListener("click", () => setAuthPanel("register"));
+        document.getElementById("tabLogin").addEventListener("click", () => setAuthPanel("login"));
+        document.getElementById("btnSaveProfile").addEventListener("click", saveProfile);
+        document.getElementById("btnChangePass").addEventListener("click", changePassword);
         document.querySelectorAll(".nav-btn").forEach((b) =>
           b.addEventListener("click", () => navTo(b.dataset.go)),
         );
-        document.querySelectorAll(".tab").forEach((t) =>
+        document.querySelectorAll("#screen-connections .tab").forEach((t) =>
           t.addEventListener("click", () => {
             connTab = t.dataset.tab;
             loadConnections();
@@ -1033,7 +1496,7 @@
         document.getElementById("btnSafety").addEventListener("click", async () => {
           try {
             const pol = await api("/policy/safety", { method: "GET" });
-            document.getElementById("policyBody").textContent = JSON.stringify(pol, null, 2);
+            renderPolicy(pol);
             document.getElementById("sheetBackdrop").classList.add("show");
             document.getElementById("policySheet").classList.add("show");
           } catch (e) {
@@ -1042,23 +1505,25 @@
         });
         document.getElementById("btnClosePolicy").addEventListener("click", closeSheets);
         document.getElementById("btnLogout").addEventListener("click", () => {
-          localStorage.removeItem(LS_UID);
+          localStorage.removeItem(LS_TOKEN);
           localStorage.removeItem(LS_NICK);
-          localStorage.removeItem("sm_mail");
           state.uid = null;
+          state.nickname = "";
           toast("ログアウトしました");
+          setAuthPanel("register");
           showScreen("onboarding");
         });
 
-        const saved = localStorage.getItem(LS_UID);
-        if (saved) {
-          state.uid = Number(saved);
-          state.nickname = localStorage.getItem(LS_NICK) || "";
-          renderStationFilters();
-          navTo("discover");
+        if (getToken()) {
+          showScreen("discover");
+          document.querySelectorAll(".nav-btn").forEach((b) => {
+            b.classList.toggle("on", b.dataset.go === "discover");
+          });
         } else {
           showScreen("onboarding");
+          setAuthPanel("register");
         }
+        restoreSession();
       }
 
       boot();
